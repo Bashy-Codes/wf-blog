@@ -1,10 +1,23 @@
 import { supabase } from '@/lib/supabase'
-import Link from 'next/link'
 import { Metadata } from 'next'
+import Container from '@/components/ui/Container'
+import PostCard from '@/components/PostCard'
+import Button from '@/components/ui/Button'
+import { ArrowRight, Globe, Users, BookOpen } from 'lucide-react'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'World Friends Blog - Connect Cultures Through Stories',
-  description: 'Discover amazing stories about international friendships, cultural exchange, and language learning.',
+  title: 'World Friends Blog - Connect Cultures Through Stories | International Friendships & Cultural Exchange',
+  description: 'Discover amazing stories about international friendships, cultural exchange, and language learning. Join our global community of world friends sharing experiences from around the globe.',
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://worldfriends-blog.vercel.app'}`,
+  },
+  openGraph: {
+    title: 'World Friends Blog - Connect Cultures Through Stories',
+    description: 'Discover amazing stories about international friendships, cultural exchange, and language learning from our global community.',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://worldfriends-blog.vercel.app',
+    images: ['/logo.png'],
+  },
 }
 
 async function getFeaturedPost() {
@@ -36,85 +49,87 @@ export default async function HomePage() {
   ])
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
       {/* Hero Section */}
-      <section className="text-center py-12">
-        <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4">
-          Connect Cultures Through Stories
-        </h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Discover amazing stories about international friendships, cultural exchange, 
-          and language learning from our global community.
-        </p>
+      <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-16 md:py-24">
+        <Container className="text-center">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+            Connect <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Cultures</span> Through Stories
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-8 leading-relaxed">
+            Discover amazing stories about international friendships, cultural exchange, 
+            and language learning from our global community of world friends.
+          </p>
+          
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto mb-12">
+            <div className="flex flex-col items-center">
+              <Globe className="w-8 h-8 text-indigo-600 mb-2" />
+              <div className="text-2xl font-bold text-gray-900">50+</div>
+              <div className="text-gray-600">Countries</div>
+            </div>
+            <div className="flex flex-col items-center">
+              <Users className="w-8 h-8 text-purple-600 mb-2" />
+              <div className="text-2xl font-bold text-gray-900">1000+</div>
+              <div className="text-gray-600">Friendships</div>
+            </div>
+            <div className="flex flex-col items-center">
+              <BookOpen className="w-8 h-8 text-indigo-600 mb-2" />
+              <div className="text-2xl font-bold text-gray-900">{latestPosts.length}+</div>
+              <div className="text-gray-600">Stories</div>
+            </div>
+          </div>
+          
+          <Link href="/posts">
+            <Button size="lg" className="group">
+              Explore Stories
+              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </Link>
+        </Container>
       </section>
 
       {/* Featured Post */}
-      {featuredPost && (
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Featured Story</h2>
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            {featuredPost.featured_image_url && (
-              <img 
-                src={featuredPost.featured_image_url} 
-                alt={featuredPost.title}
-                className="w-full h-64 object-cover"
-              />
-            )}
-            <div className="p-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                <Link href={`/posts/${featuredPost.id}`} className="hover:text-[#818CF8]">
-                  {featuredPost.title}
-                </Link>
-              </h3>
-              <p className="text-gray-600 mb-4">{featuredPost.excerpt}</p>
-              <Link 
-                href={`/posts/${featuredPost.id}`}
-                className="inline-block bg-[#818CF8] text-white px-6 py-2 rounded-lg hover:bg-[#6366F1]"
-              >
-                Read More
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Latest Posts */}
-      <section>
-        <h2 className="text-3xl font-bold text-gray-900 mb-6">Latest Stories</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {latestPosts.map((post) => (
-            <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-              {post.featured_image_url && (
-                <img 
-                  src={post.featured_image_url} 
-                  alt={post.title}
-                  className="w-full h-48 object-cover"
-                />
-              )}
-              <div className="p-4">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  <Link href={`/posts/${post.id}`} className="hover:text-[#818CF8]">
-                    {post.title}
-                  </Link>
-                </h3>
-                <p className="text-gray-600 text-sm mb-3">{post.excerpt}</p>
-                <div className="text-xs text-gray-500">
-                  {new Date(post.created_at).toLocaleDateString()}
-                </div>
+      <section className="py-16">
+        <Container>
+          {featuredPost && (
+            <div className="mb-16">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Featured Story</h2>
+                <p className="text-gray-600 max-w-2xl mx-auto">
+                  Dive into our most inspiring story of cultural connection and friendship
+                </p>
               </div>
-            </article>
-          ))}
-        </div>
-        
-        <div className="text-center mt-8">
-          <Link 
-            href="/posts"
-            className="inline-block bg-[#818CF8] text-white px-8 py-3 rounded-lg hover:bg-[#6366F1]"
-          >
-            View All Posts
-          </Link>
-        </div>
+              <div className="max-w-4xl mx-auto">
+                <PostCard post={featuredPost} featured />
+              </div>
+            </div>
+          )}
+
+          {/* Latest Posts */}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Latest Stories</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Fresh perspectives and new friendships from around the world
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {latestPosts.slice(0, 6).map((post) => (
+              <PostCard key={post.id} post={post} />
+            ))}
+          </div>
+          
+          <div className="text-center">
+            <Link href="/posts">
+              <Button size="lg" variant="outline" className="group">
+                View All Stories
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+          </div>
+        </Container>
       </section>
-    </div>
+    </>
   )
 }

@@ -1,13 +1,20 @@
 import { supabase } from '@/lib/supabase'
-import Link from 'next/link'
 import { Metadata } from 'next'
+import Container from '@/components/ui/Container'
+import PostCard from '@/components/PostCard'
+import Button from '@/components/ui/Button'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'All Posts - World Friends Blog',
-  description: 'Browse all stories about international friendships and cultural exchange.',
+  title: 'All Stories - World Friends Blog | International Friendship Stories',
+  description: 'Browse all stories about international friendships, cultural exchange, and language learning from our global community.',
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://worldfriends-blog.vercel.app'}/posts`,
+  },
 }
 
-const POSTS_PER_PAGE = 12
+const POSTS_PER_PAGE = 9
 
 async function getPosts(page: number = 1) {
   const from = (page - 1) * POSTS_PER_PAGE
@@ -33,70 +40,79 @@ export default async function PostsPage({
   const totalPages = Math.ceil(totalCount / POSTS_PER_PAGE)
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">All Stories</h1>
-      
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {posts.map((post) => (
-          <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-            {post.featured_image_url && (
-              <img 
-                src={post.featured_image_url} 
-                alt={post.title}
-                className="w-full h-48 object-cover"
-              />
-            )}
-            <div className="p-4">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                <Link href={`/posts/${post.id}`} className="hover:text-[#818CF8]">
-                  {post.title}
-                </Link>
-              </h2>
-              <p className="text-gray-600 text-sm mb-3">{post.excerpt}</p>
-              <div className="text-xs text-gray-500">
-                {new Date(post.created_at).toLocaleDateString()}
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center space-x-2">
-          {currentPage > 1 && (
-            <Link 
-              href={`/posts?page=${currentPage - 1}`}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-            >
-              Previous
-            </Link>
-          )}
-          
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <Link
-              key={page}
-              href={`/posts?page=${page}`}
-              className={`px-4 py-2 rounded ${
-                page === currentPage
-                  ? 'bg-[#818CF8] text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              {page}
-            </Link>
-          ))}
-          
-          {currentPage < totalPages && (
-            <Link 
-              href={`/posts?page=${currentPage + 1}`}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-            >
-              Next
-            </Link>
-          )}
+    <div className="py-12">
+      <Container>
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">All Stories</h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Explore our complete collection of international friendship stories and cultural exchanges
+          </p>
         </div>
-      )}
+      
+        {posts.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-gray-600 text-lg">No stories found. Check back soon for new content!</p>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {posts.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center space-x-2">
+                {currentPage > 1 && (
+                  <Link href={`/posts?page=${currentPage - 1}`}>
+                    <Button variant="outline" size="sm">
+                      <ChevronLeft className="w-4 h-4 mr-1" />
+                      Previous
+                    </Button>
+                  </Link>
+                )}
+                
+                <div className="flex space-x-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <Link key={pageNum} href={`/posts?page=${pageNum}`}>
+                        <Button
+                          variant={pageNum === currentPage ? 'primary' : 'ghost'}
+                          size="sm"
+                          className="w-10 h-10"
+                        >
+                          {pageNum}
+                        </Button>
+                      </Link>
+                    );
+                  })}
+                </div>
+                
+                {currentPage < totalPages && (
+                  <Link href={`/posts?page=${currentPage + 1}`}>
+                    <Button variant="outline" size="sm">
+                      Next
+                      <ChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </Container>
     </div>
   )
 }
