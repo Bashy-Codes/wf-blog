@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Container from '@/components/ui/Container'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import { Plus, FileText, Trash2, Edit, Calendar, Eye } from 'lucide-react'
+import { Plus, FileText, Trash2, CreditCard as Edit, Calendar, Eye } from 'lucide-react'
 import { Post } from '@/lib/supabase'
 
 const POSTS_PER_PAGE = 10
